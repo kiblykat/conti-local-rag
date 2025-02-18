@@ -17,7 +17,7 @@ def open_file(filepath):
     with open(filepath, 'r', encoding='utf-8') as infile:
         return infile.read()
 
-# Function to get relevant context from the vault based on user input
+# Function to get relevant context from the vault based on user input (using cos similarity)
 def get_relevant_context(rewritten_input, vault_embeddings, vault_content, top_k=3):
     if vault_embeddings.nelement() == 0:  # Check if the tensor has any elements
         return []
@@ -33,6 +33,7 @@ def get_relevant_context(rewritten_input, vault_embeddings, vault_content, top_k
     relevant_context = [vault_content[idx].strip() for idx in top_indices]
     return relevant_context
 
+# Rewrites the user's query using context from conversation history before searching the vault
 def rewrite_query(user_input_json, conversation_history, ollama_model):
     user_input = json.loads(user_input_json)["Query"]
     context = "\n".join([f"{msg['role']}: {msg['content']}" for msg in conversation_history[-2:]])
@@ -62,7 +63,8 @@ def rewrite_query(user_input_json, conversation_history, ollama_model):
     )
     rewritten_query = response.choices[0].message.content.strip()
     return json.dumps({"Rewritten Query": rewritten_query})
-   
+
+# Generates a response using the Ollama model, incorporating both the query and retrieved context
 def ollama_chat(user_input, system_message, vault_embeddings, vault_content, ollama_model, conversation_history):
     conversation_history.append({"role": "user", "content": user_input})
     
