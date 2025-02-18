@@ -23,7 +23,7 @@ def extract_emails_from_email_folder(msg_folder):
         text = re.sub(r'Microsoft Teams Need help?.*> _____', '', text)
         #clean up proprietary and confidential text
         text = re.sub(r'Proprietary and confidential.* subsidiaries', '', text)
-        f.write(text + "\n" + "\n")
+        f.write(text + "\n")
         # f.write(str(msg.date) + "\n")
         # f.write(msg.subject + "\n")
         # f.write("\n")
