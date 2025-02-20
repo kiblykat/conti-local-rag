@@ -4,6 +4,8 @@ from tkinter import filedialog
 import PyPDF2
 import re
 import json
+from docx import Document
+
 
 # Function to convert PDF to text and append to vault.txt
 def convert_pdf_to_text():
@@ -71,6 +73,37 @@ def upload_txtfile():
                     vault_file.write(chunk.strip() + "\n")  # Two newlines to separate chunks
             print(f"Text file content appended to vault.txt with each chunk on a separate line.")
 
+def upload_docxfile():
+    file_path = filedialog.askopenfilename(filetypes=[("Word Files", "*.docx")])
+    if file_path:
+        doc = Document(file_path)
+        text = "\n".join([para.text for para in doc.paragraphs])
+        
+        # Normalize whitespace and clean up text
+        text = re.sub(r'\s+', ' ', text).strip()
+        
+        # Split text into chunks by sentences, respecting a maximum chunk size
+        sentences = re.split(r'(?<=[.!?]) +', text)  # split on spaces following sentence-ending punctuation
+        chunks = []
+        current_chunk = ""
+        
+        for sentence in sentences:
+            if len(current_chunk) + len(sentence) + 1 < 1000:  # +1 for the space
+                current_chunk += (sentence + " ").strip()
+            else:
+                chunks.append(current_chunk)
+                current_chunk = sentence + " "
+        
+        if current_chunk:  # Don't forget the last chunk!
+            chunks.append(current_chunk)
+        
+        with open("vault.txt", "a", encoding="utf-8") as vault_file:
+            for chunk in chunks:
+                vault_file.write(chunk.strip() + "\n")  # Each chunk on a separate line
+        
+        print("Word file content appended to vault.txt with each chunk on a separate line.")
+
+
 # Function to upload a JSON file and append to vault.txt
 def upload_jsonfile():
     file_path = filedialog.askopenfilename(filetypes=[("JSON Files", "*.json")])
@@ -114,6 +147,10 @@ pdf_button.pack(pady=10)
 
 # Create a button to open the file dialog for text file
 txt_button = tk.Button(root, text="Upload Text File", command=upload_txtfile)
+txt_button.pack(pady=10)
+
+# Create a button to open the file dialog for text file
+txt_button = tk.Button(root, text="Upload docx File", command=upload_docxfile)
 txt_button.pack(pady=10)
 
 # Create a button to open the file dialog for JSON file
