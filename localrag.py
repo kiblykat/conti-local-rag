@@ -15,13 +15,13 @@ COLORS = {
 SETTINGS = {
     # Context retrieval settings
     'context': {
-        'top_k': 4,                    # Number of relevant chunks to retrieve
+        'top_k': 8,                    # Number of relevant chunks to retrieve
         'embedding_model': 'mxbai-embed-large',  # Model for embeddings
     },
     
     # Generation settings
     'generation': {
-        'max_tokens': 300,             # Maximum length of response
+        'max_tokens': 1000,             # Maximum length of response
         'temperature': 0.3,            # Randomness (0.0-1.0)
         'top_p': 0.8,                 # Nucleus sampling threshold
         'presence_penalty': 0.0,       # Topic diversity
